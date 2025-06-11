@@ -1,13 +1,26 @@
 const express = require('express');
-const app = express();
-const http = require('http').createServer(app);
-const io = require('socket.io')(http);
+const http = require('http');
+const socketIO = require('socket.io');
 
+const app = express();
+const server = http.createServer(app);
+const io = socketIO(server);
+
+// Serve static files from the 'public' directory
 app.use(express.static('public'));
 
-io.on ('connection', (socket) => {
-  console.log('A user connected');
+// Handle socket connections
+io.on('connection', (socket) => {
+    console.log('A user connected:', socket.id);
 
+    // Handle disconnection
+    socket.on('disconnect', () => {
+        console.log('User disconnected:', socket.id);
+    });
 });
 
-http.listen(process.env.PORT || 3000);
+// Start the server
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
+});
