@@ -132,3 +132,52 @@ header {
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
     transform: translateY(-2px);
 }
+
+.account-section {
+    display: flex;
+    justify-content: space-between;
+    margin: 20px 0;
+}
+
+.register-card, .login-card {
+    flex: 1;
+    margin: 20px auto;
+    max-width: 40%;
+    background-color: #f4f4f4;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.register-card h2, .login-card h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.register-card form, .login-card form {
+    display: flex;
+    text-align: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.register-card input, .login-card input {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+}
+
+.register-card button, .login-card button {
+    width: 100%;
+    padding: 10px;
+    background-color: #333;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.register-card button:hover, .login-card button:hover {
+    background-color: #555;
+}
