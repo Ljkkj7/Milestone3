@@ -94,6 +94,38 @@ header {
     margin: 20px 0;
 }
 
+@keyframes slideIn {
+    from {
+        transform: translateY(-20px);
+        opacity: 0.65;
+    }
+}
+
+@keyframes bounceInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    60% {
+        transform: translateX(-20px);
+    }
+    80% {
+        transform: translateX(10px);
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .hero-section, .hero-info-card {
+        animation: slideIn linear both;
+        animation-timeline: view();
+        animation-range: 0% 100%;
+    }
+}
+
 .header-card {
     max-width: 800px;
     margin: 0 auto;
@@ -101,6 +133,7 @@ header {
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    animation: bounceInRight 1s ease-in-out;
 }
 
 .hero-section {
@@ -115,6 +148,7 @@ header {
     text-align: center;
     border-radius: 8px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    animation: bounceInRight 1.5s ease-in-out;
 }
 
 .hero-info-card {
@@ -137,6 +171,7 @@ header {
     display: flex;
     justify-content: space-between;
     margin: 20px 0;
+    animation: fadeIn 0.5s ease-in-out;
 }
 
 .register-card, .login-card {
@@ -150,6 +185,11 @@ header {
 }
 
 .register-card h2, .login-card h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.register-card p, .login-card p {
     text-align: center;
     margin-bottom: 20px;
 }
@@ -180,4 +220,19 @@ header {
 
 .register-card button:hover, .login-card button:hover {
     background-color: #555;
+}
+
+footer {
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 20px;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+}
+
+footer p {
+    margin: 10px 0;
+    font-size: 14px;
 }
