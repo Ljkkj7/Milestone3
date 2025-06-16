@@ -1,0 +1,39 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+.navbar {
+    background-color: #333;
+    color: white;
+    padding: 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.nav-title {
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.nav-title a {
+    color: white;
+    text-decoration: none;
+}
+
+.hamburger-menu {
+    cursor: pointer;
+    font-size: large;
+}
+
+.side-menu-container {
+    display: none;
+}
+
+header {
+    text-align: center;
+    margin: 20px 0;
+}
