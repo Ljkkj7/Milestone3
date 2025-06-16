@@ -29,7 +29,7 @@ body {
 }
 
 .hamburger-menu {
-    top: 20px;
+    top: 10px;
     right: 20px;
     font-size: 30px;
     cursor: pointer;
@@ -62,6 +62,10 @@ body {
 
 .side-menu-container.open {
     right: 0; /* slide in */
+}
+
+.hamburger-menu.open {
+    position: fixed;
 }
 
 .nav-links .active {
@@ -97,4 +101,34 @@ header {
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.hero-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    max-width: 800px;
+    background-color: #f4f4f4;
+    padding: 20px 20px;
+    text-align: center;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.hero-info-card {
+    align-items: center;
+    max-width: 800px;
+    margin: 10px auto;
+    background-color: #f4f4f4;
+    padding: 20px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.hero-info-card:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    transform: translateY(-2px);
 }

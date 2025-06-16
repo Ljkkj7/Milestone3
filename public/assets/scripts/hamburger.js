@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', function () {
   
     function toggleMenu() {
       sideMenu.classList.toggle('open');
+      hamburger.classList.toggle('open');
       menuOpen = sideMenu.classList.contains('open');
   
       if (menuOpen) {
