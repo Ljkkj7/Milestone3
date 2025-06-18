@@ -13,6 +13,10 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 from pathlib import Path
 import dj_database_url
 import os
+from dotenv import load_dotenv
+
+#load .env file
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -22,12 +26,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-f0dt=1y_a0w1#mx7gjmgv0q%d3vi+i9ri5criw+%2h=(%t%f=5'
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-f0dt=1y_a0w1#mx7gjmgv0q%d3vi+i9ri5criw+%2h=(%t%f=5')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = ENVIRONMENT != 'production'
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = (
+    ['127.0.0.1', 'localhost']
+    if DEBUG
+    else os.getenv('ALLOWED_HOSTS', '').split(',')
+)
 
 
 # Application definition
@@ -80,12 +88,23 @@ WSGI_APPLICATION = 'marketio_backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASES = {
-    'default': dj_database_url.config(
-        default='sqlite:///db.sqlite3',
-        conn_max_age=600,
-    )
-}
+database_url = os.environ.get('DATABASE_URL')
+
+if database_url:
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=database_url,
+            conn_max_age=600,
+            ssl_require=not DEBUG
+        )
+    }
+else:
+    DATABASES = {
+        'default': dj_database_url.config(
+            default='sqlite:///db.sqlite3',
+            conn_max_age=600,
+        )
+    }
 
 
 # Password validation
