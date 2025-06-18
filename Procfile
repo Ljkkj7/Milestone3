@@ -1,3 +1,3 @@
 web: npm start
-web: gunicorn backend.marketio_backend.wsgi
+web: gunicorn marketio_backend.wsgi
 release: python backend/marketio_backend/manage.py migrate
