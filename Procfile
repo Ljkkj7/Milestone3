@@ -1,3 +1,3 @@
 web: npm start
-web: cd backend/marketio_backend && gunicorn marketio_backend.wsgi:application --bind 0.0.0.0:8000
+web: cd backend/marketio_backend && gunicorn marketio_backend.wsgi:application --bind 0.0.0.0:$PORT
 release: python backend/marketio_backend/manage.py migrate
