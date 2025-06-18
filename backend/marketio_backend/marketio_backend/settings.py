@@ -140,8 +140,9 @@ USE_TZ = True
 
 # CORS (Cross-Origin Resource Sharing)
 CORS_ALLOWED_ORIGINS = [
-    'http://127.0.0.1:5500',  # React app running on localhost
-    'http://localhost:5500',  # React app running on localhost
+    'http://127.0.0.1:5500',  # app running on localhost
+    'http://localhost:5500',  # app running on localhost
+    'https://marketio-frontend-139f7c2c9279.herokuapp.com'  # Frontend URL
 ]
 
 
