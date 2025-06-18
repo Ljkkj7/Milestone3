@@ -26,7 +26,7 @@ class RegisterView(APIView):
         serializer = RegisterSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
-            profile = UserProfile.objects.create(user=user)
+            profile, created = UserProfile.objects.get_or_create(user=user)
             return Response({
                 "message": "User registered successfully.",
                 "username": user.username,
