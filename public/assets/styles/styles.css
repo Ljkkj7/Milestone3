@@ -65,7 +65,8 @@ body {
 }
 
 .hamburger-menu.open {
-    position: fixed;
+    transform: translateZ(-180deg); /* to keep hamburger from shifting */
+
 }
 
 .nav-links .active {
