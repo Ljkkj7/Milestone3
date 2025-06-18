@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'custom_auth',  # Custom authentication app
+    'stockhandler',  # Stock handling app
     'corsheaders',  # For handling CORS
     'django.contrib.sites',  # For Django sites framework
     'rest_framework.authtoken',  # For token authentication
