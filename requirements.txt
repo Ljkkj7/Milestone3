@@ -8,7 +8,9 @@ Django==5.2.3
 django-cors-headers==4.7.0
 django-rest-framework==0.1.0
 djangorestframework==3.16.0
+gunicorn==23.0.0
 idna==3.10
+packaging==25.0
 psycopg2-binary==2.9.10
 pycparser==2.22
 python-dotenv==1.1.0
