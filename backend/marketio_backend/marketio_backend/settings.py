@@ -140,11 +140,12 @@ USE_I18N = True
 USE_TZ = True
 
 # CORS (Cross-Origin Resource Sharing)
-CORS_ALLOWED_ORIGINS = [
-    'http://127.0.0.1:5500',  # app running on localhost
-    'http://localhost:5500',  # app running on localhost
+if ENVIRONMENT == 'development':
+    CORS_ALLOW_ALL_ORIGINS = True
+else:
+    CORS_ALLOWED_ORIGINS = [
     'https://marketio-frontend-139f7c2c9279.herokuapp.com'  # Frontend URL
-]
+    ]
 
 
 # Static files (CSS, JavaScript, Images)
