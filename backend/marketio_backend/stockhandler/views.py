@@ -11,3 +11,11 @@ class StockListAPIView(APIView):
         stocks = Stock.objects.all()
         serializer = StockSerializer(stocks, many=True)
         return Response(serializer.data)
+    
+class StockUpdateAPIView(APIView):
+    def post(self, request):
+        stocks = Stock.objects.all()
+        for stock in stocks:
+            stock.simulate_price_change()
+        serializer = StockSerializer(stocks, many=True)
+        return Response(serializer.data)
