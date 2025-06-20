@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 import math
 import random
+from decimal import Decimal
 from django.utils import timezone
 
 
@@ -24,6 +25,7 @@ class Stock(models.Model):
 
         noise = random.uniform(-1.0, 1.0)
 
-        self.price = round(self.base_price + wave + noise, 2)
+        new_price = Decimal(self.base_price) + Decimal(wave + noise)
+        self.price = round(new_price, 2)
         self.save()
 
