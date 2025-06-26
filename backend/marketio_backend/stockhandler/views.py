@@ -76,8 +76,8 @@ class SellStockView(APIView):
         quantity = int(request.data.get("quantity"))
 
         stockOwned = (
-            sum(t.quantity for t in Transaction.objects.filter(user_profile=user_profile, symbol=symbol, transaction_type='BUY'))
-            - sum(t.quantity for t in Transaction.objects.filter(user_profile=user_profile, symbol=symbol, transaction_type='SELL'))
+            sum(t.quantity for t in Transaction.objects.filter(user_profile=user_profile, stock=stock, transaction_type='BUY'))
+            - sum(t.quantity for t in Transaction.objects.filter(user_profile=user_profile, stock=stock, transaction_type='SELL'))
         )
 
         if not symbol or not quantity:
