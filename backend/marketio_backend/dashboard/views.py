@@ -36,7 +36,7 @@ class PortfolioLoadView(APIView):
         portfolio = {}
 
         if len(transactions) <= 0:
-            return Response('total_portfolio_value': 0)
+            return Response({'total_portfolio_value': 0})
         for tx in transactions:
             symbol = tx.stock.symbol
             portfolio.setdefault(symbol, 0)
