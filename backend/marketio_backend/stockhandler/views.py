@@ -53,14 +53,14 @@ class BuyStockView(APIView):
         user_profile.balance -= totalCost
         user_profile.save()
 
-        transaction = Transaction.objects.create(
+        Transaction.objects.create(
             user_profile=user_profile,
             stock=stock,
             quantity=quantity,
             transaction_type='BUY'
         )
 
-        return Response({'message': f'Successfully bought {quantity} shares 0f {symbol}'})
+        return Response({'message': f'Successfully bought {quantity} shares of {symbol}'})
         
 
 
