@@ -37,16 +37,3 @@ class PortfolioLoadView(APIView):
 
         if not transactions.exists():
             return Response({'total_portfolio_value': 0})
-        for tx in transactions:
-            symbol = tx.stock.symbol
-            portfolio.setdefault(symbol, 0)
-            if tx.transaction_type == 'BUY':
-                portfolio[symbol] += tx.quantity
-            elif tx.transaction_type == 'SELL':
-                portfolio[symbol] -= tx.quantity
-        
-        total_value = 0
-        details = []
-
-        # Build total portfolio value here 
-        # |
