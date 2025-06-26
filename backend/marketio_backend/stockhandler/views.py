@@ -57,7 +57,8 @@ class BuyStockView(APIView):
             user_profile=user_profile,
             stock=stock,
             quantity=quantity,
-            transaction_type='BUY'
+            transaction_type='BUY',
+            price=stock.price
         )
 
         return Response({'message': f'Successfully bought {quantity} shares of {symbol}'})
