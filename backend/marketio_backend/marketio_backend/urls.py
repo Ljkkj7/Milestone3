@@ -23,4 +23,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('custom_auth/', include('custom_auth.urls')),
     path('stocks/', include('stockhandler.urls')),
+    path('dashboard/', include('dashboard.urls'))
 ]

@@ -1,7 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import User
+from custom_auth.models import UserProfile
 import math
 import random
+from decimal import Decimal
 from django.utils import timezone
 
 
@@ -24,6 +26,13 @@ class Stock(models.Model):
 
         noise = random.uniform(-1.0, 1.0)
 
-        self.price = round(self.base_price + wave + noise, 2)
+        new_price = Decimal(self.base_price) + Decimal(wave + noise)
+        self.price = round(new_price, 2)
         self.save()
 
+class Transaction(models.Model):
+    user_profile = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+    stock = models.ForeignKey(Stock, on_delete=models.CASCADE)
+    quantity = models.IntegerField()
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    transaction_type = models.CharField(max_length=4, choices=[('BUY', 'Buy'), ('SELL', 'Sell')])
