@@ -75,8 +75,10 @@ class SellStockView(APIView):
         symbol = request.data.get("symbol")
         quantity = int(request.data.get("quantity"))
 
-        stockOwned = sum(t.quantity for t in Transaction.objects.filter(user_profile=user_profile, symbol=symbol, transaction_type='BUY')) - \
-                     sum(t.quantity for t in Transaction.objects.filter(user_profile=user_profile, symbol=symbol, transaction_type='SELL'))
+        stockOwned = (
+            sum(t.quantity for t in Transaction.objects.filter(user_profile=user_profile, symbol=symbol, transaction_type='BUY'))
+            - sum(t.quantity for t in Transaction.objects.filter(user_profile=user_profile, symbol=symbol, transaction_type='SELL'))
+        )
 
         if not symbol or not quantity:
             return Response({'error': 'Symbol and quantity are requred.'})
