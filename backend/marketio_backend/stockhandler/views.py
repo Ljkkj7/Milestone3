@@ -75,6 +75,12 @@ class SellStockView(APIView):
         symbol = request.data.get("symbol")
         quantity = int(request.data.get("quantity"))
 
+        try:
+            stock = Stock.objects.get(symbol=symbol)
+        except Stock.DoesNotExist:
+            return Response({'error': 'Stock not found'})
+        
+        
         stockOwned = (
             sum(t.quantity for t in Transaction.objects.filter(user_profile=user_profile, stock=stock, transaction_type='BUY'))
             - sum(t.quantity for t in Transaction.objects.filter(user_profile=user_profile, stock=stock, transaction_type='SELL'))
@@ -91,10 +97,6 @@ class SellStockView(APIView):
         except ValueError:
             return Response({'error': 'Quantity must be an integer'})
         
-        try:
-            stock = Stock.objects.get(symbol=symbol)
-        except Stock.DoesNotExist:
-            return Response({'error': 'Stock not found'})
         
         totalPrice = stock.price * quantity
 
