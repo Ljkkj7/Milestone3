@@ -30,12 +30,12 @@ class PortfolioLoadView(APIView):
 
     def get(self, req):
         user_profile = UserProfile.objects.get(user=req.user)
-        transactions = Transaction.objects.get(user_profile=user_profile)
+        transactions = Transaction.objects.filter(user_profile=user_profile)
 
         # Build porfolio: {symbol: net_quantity}
         portfolio = {}
 
-        if len(transactions) <= 0:
+        if not transactions.exists():
             return Response({'total_portfolio_value': 0})
         for tx in transactions:
             symbol = tx.stock.symbol
