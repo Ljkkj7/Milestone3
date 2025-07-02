@@ -52,7 +52,7 @@ class BuyStockView(APIView):
         
         user_profile.balance -= totalCost
         user_profile.save()
-
+        
         Transaction.objects.create(
             user_profile=user_profile,
             stock=stock,
@@ -61,7 +61,14 @@ class BuyStockView(APIView):
             price=stock.price
         )
 
-        return Response({'message': f'Successfully bought {quantity} shares of {symbol}'})
+        stockOwned = (
+            sum(t.quantity for t in Transaction.objects.filter(user_profile=user_profile, stock=stock, transaction_type='BUY'))
+            )
+
+        return Response({'quantity': stockOwned,
+                         'price': stock.price,
+                         'balance': user_profile.balance
+                         })
         
 
 
@@ -115,5 +122,6 @@ class SellStockView(APIView):
 
         return Response({
             'quantity': stockOwned,
-            'price': stock.price
+            'price': stock.price,
+            'balance': user_profile.balance,
         })
