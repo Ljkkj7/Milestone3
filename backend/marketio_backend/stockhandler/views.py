@@ -111,4 +111,7 @@ class SellStockView(APIView):
             price=stock.price
         )
 
-        return Response({'message': f'Successfully sold {quantity} shares of {symbol}'})
+        return Response({
+            'quantity': quantity,
+            'price': stock.price
+        })
