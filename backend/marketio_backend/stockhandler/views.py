@@ -111,7 +111,9 @@ class SellStockView(APIView):
             price=stock.price
         )
 
+        stockOwned = stockOwned - quantity
+
         return Response({
-            'quantity': quantity,
+            'quantity': stockOwned,
             'price': stock.price
         })
