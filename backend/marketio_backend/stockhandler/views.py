@@ -63,7 +63,8 @@ class BuyStockView(APIView):
 
         stockOwned = (
             sum(t.quantity for t in Transaction.objects.filter(user_profile=user_profile, stock=stock, transaction_type='BUY'))
-            )
+            - sum(t.quantity for t in Transaction.objects.filter(user_profile=user_profile, stock=stock, transaction_type='SELL'))
+        )
 
         return Response({'quantity': stockOwned,
                          'price': stock.price,
