@@ -5,6 +5,7 @@ from custom_auth.serializers import UserProfileSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from decimal import Decimal
 
 
 # Create your views here.
@@ -89,14 +90,14 @@ class ProfitLossView(APIView):
         for tx in transactions:
             if not tx.stock:
                 continue
-            
+
             symbol = tx.stock.symbol
             if symbol not in portfolio:
                 portfolio[symbol] = {
                     'buy_qty': 0,
-                    'buy_total': 0.0,
+                    'buy_total': Decimal(0.0),
                     'sell_qty': 0,
-                    'sell_total': 0.0
+                    'sell_total': Decimal(0.0)
                 }
             
             if tx.transaction_type == 'BUY':
@@ -106,7 +107,7 @@ class ProfitLossView(APIView):
                 portfolio[symbol]['sell_qty'] += tx.quantity
                 portfolio[symbol]['sell_total'] += tx.quantity * tx.price
         
-        total_profit_loss = 0.0
+        total_profit_loss = Decimal(0.0)
         details = []
 
         for symbol, data in portfolio.items():
@@ -117,19 +118,19 @@ class ProfitLossView(APIView):
             try:
                 stock = Stock.objects.get(symbol=symbol)
                 current_price = stock.price
-                avg_buy_price = data['buy_total'] / data['buy_qty'] if data['buy_qty'] else 0
+                avg_buy_price = (data['buy_total'] / Decimal(data['buy_qty'])) if data['buy_qty'] else Decimal("0.0")
 
-                current_value = current_price * net_qty
-                cost_basis = avg_buy_price * net_qty
+                current_value = current_price * Decimal(net_qty)
+                cost_basis = avg_buy_price * Decimal(net_qty)
                 pnl = current_value - cost_basis
-
                 total_profit_loss += pnl
 
                 details.append({
                     'symbol': symbol,
-                    'average_buy_price': round(avg_buy_price, 2),
-                    'cost_basis': round(cost_basis, 2),
-                    'profit_loss': round(pnl, 2)
+                    'average_buy_price': round(float(avg_buy_price), 2),
+                    'cost_basis': round(float(cost_basis), 2),
+                    'current_price': round(float(current_price), 2),
+                    'profit_loss': round(float(pnl), 2)
                 })
 
             except Stock.DoesNotExist:
