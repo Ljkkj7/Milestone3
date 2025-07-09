@@ -14,6 +14,7 @@ from pathlib import Path
 import dj_database_url
 import os
 from dotenv import load_dotenv
+from datetime import timedelta
 
 #load .env file
 load_dotenv()
@@ -34,7 +35,7 @@ ENVIRONMENT = os.getenv('ENV', 'development')
 DEBUG = os.getenv('DEBUG', 'False').lower() in ('true', '1', 'yes')
 
 ALLOWED_HOSTS = (
-    ['127.0.0.1', 'localhost']
+    ['127.0.0.1', 'localhost', 'marketio-3cedad1469b3.herokuapp.com']
     if DEBUG
     else os.getenv('ALLOWED_HOSTS', '').split(',')
 )
@@ -167,4 +168,13 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.AllowAny',
     )
+}
+
+#Simple JWT Config
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
 }
