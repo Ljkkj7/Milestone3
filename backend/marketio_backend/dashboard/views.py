@@ -87,6 +87,9 @@ class ProfitLossView(APIView):
         
         portfolio = {}
         for tx in transactions:
+            if not tx.stock:
+                continue
+            
             symbol = tx.stock.symbol
             if symbol not in portfolio:
                 portfolio[symbol] = {
@@ -136,3 +139,4 @@ class ProfitLossView(APIView):
             'total_profit_loss': round(total_profit_loss, 2),
             'details': details
         })
+    
