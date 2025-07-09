@@ -35,7 +35,7 @@ ENVIRONMENT = os.getenv('ENV', 'development')
 DEBUG = os.getenv('DEBUG', 'False').lower() in ('true', '1', 'yes')
 
 ALLOWED_HOSTS = (
-    ['127.0.0.1', 'localhost']
+    ['127.0.0.1', 'localhost', 'marketio-3cedad1469b3.herokuapp.com']
     if DEBUG
     else os.getenv('ALLOWED_HOSTS', '').split(',')
 )
