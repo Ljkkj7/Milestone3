@@ -43,17 +43,32 @@ class PortfolioLoadView(APIView):
     A view to load a users portfolio value
     """
     permission_classes = [IsAuthenticated]
-
-    def get(self, req):
-        user_profile = UserProfile.objects.get(user=req.user)
-        transactions = Transaction.objects.filter(user_profile=user_profile)
-
-        if not transactions.exists():
-            return Response({'total_portfolio_value': 0})
+    
+    def get(self, request):
+        # Check if requesting another user's portfolio
+        target_user_id = request.query_params.get('target_user')
         
-        # Build portfolio: {symbol: net_Quantity}
-        portfolio = {}
+        try:
+            if target_user_id:
+                user_profile = UserProfile.objects.get(user__id=target_user_id)
+            else:
+                user_profile = UserProfile.objects.get(user=request.user)
+        except UserProfile.DoesNotExist:
+            error_msg = "Target user not found." if target_user_id else "User profile not found."
+            return Response({"error": error_msg}, status=404)
+        
+        return self.calculate_portfolio(user_profile)
 
+    def calculate_portfolio(self, user_profile):
+        """Helper method to calculate portfolio value"""
+        transactions = Transaction.objects.filter(user_profile=user_profile).select_related('stock')
+        
+        if not transactions.exists():
+            return Response({'total_portfolio_value': 0, 'details': []})
+        
+        # Build portfolio: {symbol: net_quantity}
+        portfolio = {}
+        
         for tx in transactions:
             symbol = tx.stock.symbol
             portfolio.setdefault(symbol, 0)
@@ -62,78 +77,37 @@ class PortfolioLoadView(APIView):
             elif tx.transaction_type == 'SELL':
                 portfolio[symbol] -= tx.quantity
         
-        totalValue = 0
+        # Get all stocks for symbols in portfolio (single query)
+        symbols_with_quantity = [symbol for symbol, qty in portfolio.items() if qty > 0]
+        if not symbols_with_quantity:
+            return Response({'total_portfolio_value': 0, 'details': []})
+        
+        stocks = {stock.symbol: stock for stock in Stock.objects.filter(symbol__in=symbols_with_quantity)}
+        
+        total_value = 0
         details = []
-
+        
         for symbol, quantity in portfolio.items():
             if quantity <= 0:
                 continue
-            try:
-                stock = Stock.objects.get(symbol=symbol)
-                stockValue = stock.price * quantity
-                totalValue += stockValue
-                details.append({
-                    'symbol': symbol,
-                    'quantity': quantity,
-                    'current_price': stock.price,
-                    'value': stockValue
-                })
-            except Stock.DoesNotExist:
-                continue
+            
+            stock = stocks.get(symbol)
+            if not stock:
+                continue  # Skip if stock not found
+            
+            stock_value = stock.price * quantity
+            total_value += stock_value
+            details.append({
+                'symbol': symbol,
+                'quantity': quantity,
+                'current_price': stock.price,
+                'value': stock_value
+            })
         
         return Response({
-            'total_portfolio_value': totalValue,
+            'total_portfolio_value': total_value,
             'details': details
         })
-    
-    def get_target_user_portfolio(self):
-        target_user_id = self.request.query_params.get('target_user')
-        if not target_user_id:
-            return Response({"error": "Target user ID is required."}, status=400)
-
-        try:
-            target_user_profile = UserProfile.objects.get(user__id=target_user_id)
-            transactions = Transaction.objects.filter(user_profile=target_user_profile)
-
-            if not transactions.exists():
-                return Response({'total_portfolio_value': 0})
-
-            # Build portfolio: {symbol: net_Quantity}
-            portfolio = {}
-
-            for tx in transactions:
-                symbol = tx.stock.symbol
-                portfolio.setdefault(symbol, 0)
-                if tx.transaction_type == 'BUY':
-                    portfolio[symbol] += tx.quantity
-                elif tx.transaction_type == 'SELL':
-                    portfolio[symbol] -= tx.quantity
-
-            totalValue = 0
-            details = []
-
-            for symbol, quantity in portfolio.items():
-                if quantity <= 0:
-                    continue
-                try:
-                    stock = Stock.objects.get(symbol=symbol)
-                    stockValue = stock.price * quantity
-                    totalValue += stockValue
-                    details.append({
-                        'symbol': symbol,
-                        'quantity': quantity,
-                        'current_price': stock.price,
-                        'value': stockValue
-                    })
-                except Stock.DoesNotExist:
-                    continue
-
-            return Response({
-                'total_portfolio_value': totalValue,
-                'details': details
-            })
-        except UserProfile.DoesNotExist:
-            return Response({"error": "Target user not found."}, status=404)
 
 
 class ProfitLossView(APIView):
