@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from stockhandler.models import Transaction, Stock
 from custom_auth.models import UserProfile
-from custom_auth.serializers import UserProfileSerializer
+from custom_auth.serializers import UserProfileSerializer, TargetUserProfileSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -15,13 +15,27 @@ class BalanceLoadView(APIView):
     """
     A view to load a users balance value
     """
-
     permission_classes = [IsAuthenticated]
-
-    def get(self, req):
-        balance = UserProfile.objects.get(user=req.user)
-        serializer = UserProfileSerializer(balance)
-        return Response(serializer.data)
+    
+    def get(self, request):
+        # Check if requesting another user's balance
+        target_user_id = request.query_params.get('target_user')
+        
+        if target_user_id:
+            try:
+                target_user_profile = UserProfile.objects.get(user__id=target_user_id)
+                serializer = TargetUserProfileSerializer(target_user_profile)
+                return Response(serializer.data)
+            except UserProfile.DoesNotExist:
+                return Response({"error": "Target user not found."}, status=404)
+        else:
+            # Get current user's balance
+            try:
+                balance = UserProfile.objects.get(user=request.user)
+                serializer = UserProfileSerializer(balance)
+                return Response(serializer.data)
+            except UserProfile.DoesNotExist:
+                return Response({"error": "User profile not found."}, status=404)
 
 
 class PortfolioLoadView(APIView):
@@ -71,6 +85,56 @@ class PortfolioLoadView(APIView):
             'total_portfolio_value': totalValue,
             'details': details
         })
+    
+    def get_target_user_portfolio(self):
+        target_user_id = self.request.query_params.get('target_user')
+        if not target_user_id:
+            return Response({"error": "Target user ID is required."}, status=400)
+
+        try:
+            target_user_profile = UserProfile.objects.get(user__id=target_user_id)
+            transactions = Transaction.objects.filter(user_profile=target_user_profile)
+
+            if not transactions.exists():
+                return Response({'total_portfolio_value': 0})
+
+            # Build portfolio: {symbol: net_Quantity}
+            portfolio = {}
+
+            for tx in transactions:
+                symbol = tx.stock.symbol
+                portfolio.setdefault(symbol, 0)
+                if tx.transaction_type == 'BUY':
+                    portfolio[symbol] += tx.quantity
+                elif tx.transaction_type == 'SELL':
+                    portfolio[symbol] -= tx.quantity
+
+            totalValue = 0
+            details = []
+
+            for symbol, quantity in portfolio.items():
+                if quantity <= 0:
+                    continue
+                try:
+                    stock = Stock.objects.get(symbol=symbol)
+                    stockValue = stock.price * quantity
+                    totalValue += stockValue
+                    details.append({
+                        'symbol': symbol,
+                        'quantity': quantity,
+                        'current_price': stock.price,
+                        'value': stockValue
+                    })
+                except Stock.DoesNotExist:
+                    continue
+
+            return Response({
+                'total_portfolio_value': totalValue,
+                'details': details
+            })
+        except UserProfile.DoesNotExist:
+            return Response({"error": "Target user not found."}, status=404)
+
 
 class ProfitLossView(APIView):
     """
