@@ -25,11 +25,11 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserProfile
-        fields = ['username', 'email', 'balance']
+        fields = ['username', 'email', 'balance', 'level', 'experience']
 
 class TargetUserProfileSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='user.username', read_only=True)
 
     class Meta:
         model = UserProfile
-        fields = ['username', 'balance']
+        fields = ['username', 'balance', 'level', 'experience']
