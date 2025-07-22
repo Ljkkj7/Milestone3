@@ -1,3 +1,4 @@
+from decimal import Decimal
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -49,8 +50,8 @@ class BuyStockView(APIView):
 
         if user_profile.balance < totalCost:
             return Response({'error': 'Insufficient balance'})
-        
-        experience_gain = int(totalCost * 0.1)  # Example: 10% of total cost as experience
+
+        experience_gain = int(totalCost * Decimal(0.1))  # Example: 10% of total cost as experience
         user_profile.experience += experience_gain
 
         user_profile.balance -= totalCost
@@ -111,7 +112,7 @@ class SellStockView(APIView):
         
         totalPrice = stock.price * quantity
 
-        experience_gain = int(totalPrice * 0.1)  # Example: 10% of total price as experience
+        experience_gain = int(totalPrice * Decimal(0.1))  # Example: 10% of total price as experience
         if experience_gain < 0:
             experience_gain = 0
         user_profile.experience += experience_gain
