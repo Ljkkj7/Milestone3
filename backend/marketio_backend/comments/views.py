@@ -26,3 +26,38 @@ class CommentListCreateView(generics.ListCreateAPIView):
         target_user = User.objects.get(id=target_user_id)
         serializer.save(author=self.request.user, target_user=target_user)
 
+
+class CommentRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self):
+        """
+        Override to ensure the comment belongs to the current user.
+        """
+        obj = super().get_object()
+        if obj.author != self.request.user:
+            raise permissions.PermissionDenied("You do not have permission to edit this comment.")
+        return obj
+    
+    def perform_update(self, serializer):
+        """
+        Update the comment with the current user as the author.
+        """
+        serializer.save(author=self.request.user)
+
+    def perform_destroy(self, instance):
+        """
+        Delete the comment if it belongs to the current user.
+        """
+        if instance.author == self.request.user:
+            instance.delete()
+        else:
+            raise permissions.PermissionDenied("You do not have permission to delete this comment.")
+
+
+
+
+
+
