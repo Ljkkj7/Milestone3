@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from rest_framework import generics, permissions
+from rest_framework.exceptions import PermissionDenied
 from .models import Comment
 from .serializers import CommentSerializer
 from django.contrib.auth.models import User
@@ -37,11 +38,8 @@ class CommentRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
         Override to ensure the comment belongs to the current user / profile owner.
         """
         obj = super().get_object()
-        print(f"Checking permissions for user: {self.request.user} on comment: {obj}")
-        print(f"Comment author: {obj.author}, Target user: {obj.target_user}")
-        print(f"Request user: {self.request.user}")
         if obj.author != self.request.user and obj.target_user != self.request.user:
-            raise permissions.PermissionDenied("You do not have permission to edit this comment.")
+            raise PermissionDenied("You do not have permission to edit this comment.")
         return obj
 
     def perform_update(self, serializer):
