@@ -37,6 +37,9 @@ class CommentRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
         Override to ensure the comment belongs to the current user / profile owner.
         """
         obj = super().get_object()
+        print(f"Checking permissions for user: {self.request.user} on comment: {obj}")
+        print(f"Comment author: {obj.author}, Target user: {obj.target_user}")
+        print(f"Request user: {self.request.user}")
         if obj.author != self.request.user and obj.target_user != self.request.user:
             raise permissions.PermissionDenied("You do not have permission to edit this comment.")
         return obj
