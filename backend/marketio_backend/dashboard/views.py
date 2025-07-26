@@ -178,4 +178,83 @@ class ProfitLossView(APIView):
             'total_profit_loss': round(total_profit_loss, 2),
             'details': details
         })
-    
+
+
+class TopThreeStocksView(APIView):
+    """
+    A view to retrieve the top three stocks by profit/loss for the current user.
+    """
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, req):
+
+        # Check if requesting another user's top stocks
+        target_user_id = req.query_params.get('target_user')
+        if target_user_id:
+            try:
+                user_profile = UserProfile.objects.get(user__id=target_user_id)
+            except UserProfile.DoesNotExist:
+                return Response({"error": "Target user not found."}, status=404)
+        else:
+            user_profile = UserProfile.objects.get(user=req.user)
+
+        # Get all transactions for the user
+        if not user_profile:
+            return Response({"error": "User profile not found."}, status=404)
+        if not user_profile.user.is_authenticated:
+            return Response({"error": "User is not authenticated."}, status=401)
+        
+        # Get all transactions for the user
+        transactions = Transaction.objects.filter(user_profile=user_profile)
+
+        # If no transactions, return empty response
+        if not transactions.exists():
+            return Response({'top_stocks': []})
+        
+        # Build portfolio: {symbol: {buy_qty, buy_total, sell_qty, sell_total}}
+        portfolio = {}
+        for tx in transactions:
+            if not tx.stock:
+                continue
+
+            symbol = tx.stock.symbol
+            if symbol not in portfolio:
+                portfolio[symbol] = {
+                    'buy_qty': 0,
+                    'buy_total': Decimal(0.0),
+                    'sell_qty': 0,
+                    'sell_total': Decimal(0.0)
+                }
+
+            if tx.transaction_type == 'BUY':
+                portfolio[symbol]['buy_qty'] += tx.quantity
+                portfolio[symbol]['buy_total'] += tx.quantity * tx.price
+            elif tx.transaction_type == 'SELL':
+                portfolio[symbol]['sell_qty'] += tx.quantity
+                portfolio[symbol]['sell_total'] += tx.quantity * tx.price
+
+        # Calculate profit/loss for each stock 
+        stock_pnl = []
+        for symbol, data in portfolio.items():
+            net_qty = data['buy_qty'] - data['sell_qty']
+            if net_qty <= 0:
+                continue  # No holdings, ignore
+
+            try:
+                if portfolio[symbol]['sell_total'] - portfolio[symbol]['buy_total'] >= 0:
+                    stock_pnl.append({
+                        'symbol': symbol,
+                        'profit_loss': round(float(portfolio[symbol]['sell_total'] - portfolio[symbol]['buy_total']), 2)
+                    })
+
+            except ZeroDivisionError:
+                # If there are no buy transactions, skip this stock
+                continue
+
+        # Sort by profit/loss and get top three
+        top_stocks = sorted(stock_pnl, key=lambda x: x['profit_loss'], reverse=True)[:3]
+
+        return Response({
+            'top_stocks': top_stocks
+        })
