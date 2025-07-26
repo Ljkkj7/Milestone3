@@ -34,13 +34,13 @@ class CommentRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
 
     def get_object(self):
         """
-        Override to ensure the comment belongs to the current user.
+        Override to ensure the comment belongs to the current user / profile owner.
         """
         obj = super().get_object()
-        if obj.author != self.request.user:
+        if obj.author != self.request.user and obj.target_user != self.request.user:
             raise permissions.PermissionDenied("You do not have permission to edit this comment.")
         return obj
-    
+
     def perform_update(self, serializer):
         """
         Update the comment with the current user as the author.
