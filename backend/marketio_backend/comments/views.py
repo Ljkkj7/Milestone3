@@ -52,10 +52,10 @@ class CommentRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
         """
         Delete the comment if it belongs to the current user.
         """
-        if instance.author == self.request.user:
+        if instance.author == self.request.user or instance.target_user == self.request.user:
             instance.delete()
         else:
-            raise permissions.PermissionDenied("You do not have permission to delete this comment.")
+            raise PermissionDenied("You do not have permission to delete this comment.")
 
 
 
