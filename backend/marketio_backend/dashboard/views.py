@@ -237,20 +237,12 @@ class TopThreeStocksView(APIView):
         # Calculate profit/loss for each stock 
         stock_pnl = []
         for symbol, data in portfolio.items():
-            net_qty = data['buy_qty'] - data['sell_qty']
-            if net_qty <= 0:
-                continue  # No holdings, ignore
-
-            try:
-                if portfolio[symbol]['sell_total'] - portfolio[symbol]['buy_total'] >= 0:
-                    stock_pnl.append({
-                        'symbol': symbol,
-                        'profit_loss': round(float(portfolio[symbol]['sell_total'] - portfolio[symbol]['buy_total']), 2)
-                    })
-
-            except ZeroDivisionError:
-                # If there are no buy transactions, skip this stock
-                continue
+            if data['buy_qty'] - data['sell_qty'] == 0:
+                pnl = data['sell_total'] - data['buy_total']
+                stock_pnl.append({
+                    'symbol': symbol,
+                    'profit_loss': round(float(pnl), 2)
+                })
 
         # Sort by profit/loss and get top three
         top_stocks = sorted(stock_pnl, key=lambda x: x['profit_loss'], reverse=True)[:3]
