@@ -23,6 +23,30 @@ class StockUpdateAPIView(APIView):
         serializer = StockSerializer(stocks, many=True)
         return Response(serializer.data)
     
+class PositiveStockMarketEventAPIView(APIView):
+    def post(self, request):
+        stockAffected = request.data.get("symbol")
+        stock = Stock.objects.filter(symbol=stockAffected).first()
+        stock.simulate_positive_market_event()
+        serializer = StockSerializer(stock)
+        return Response(serializer.data)
+    
+class NegativeStockMarketEventAPIView(APIView):
+    def post(self, request):
+        stockAffected = request.data.get("symbol")
+        stock = Stock.objects.filter(symbol=stockAffected).first()
+        stock.simulate_negative_market_event()
+        serializer = StockSerializer(stock)
+        return Response(serializer.data)
+    
+class StockMarketEventEndAPIView(APIView):
+    def post(self, request):
+        stockAffected = request.data.get("symbol")
+        stock = Stock.objects.filter(symbol=stockAffected).first()
+        stock.market_event_end()
+        serializer = StockSerializer(stock)
+        return Response(serializer.data)
+    
 class BuyStockView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -51,8 +75,12 @@ class BuyStockView(APIView):
         if user_profile.balance < totalCost:
             return Response({'error': 'Insufficient balance'})
 
-        experience_gain = int(totalCost * Decimal(0.1))  # Example: 10% of total cost as experience
+        experience_gain = int(totalCost * Decimal('0.1'))  # Example: 10% of total cost as experience
         user_profile.experience += experience_gain
+
+        if user_profile.experience > ((user_profile.level**2) * 1000):
+            user_profile.level += 1
+            user_profile.experience = 0
 
         user_profile.balance -= totalCost
         user_profile.save()
@@ -112,10 +140,14 @@ class SellStockView(APIView):
         
         totalPrice = stock.price * quantity
 
-        experience_gain = int(totalPrice * Decimal(0.1))  # Example: 10% of total price as experience
+        experience_gain = int(totalPrice * Decimal('0.1'))  # Example: 10% of total price as experience
         if experience_gain < 0:
             experience_gain = 0
         user_profile.experience += experience_gain
+
+        if user_profile.experience > ((user_profile.level**2) * 1000):
+            user_profile.level += 1
+            user_profile.experience = 0
 
         user_profile.balance += totalPrice
         user_profile.save()
