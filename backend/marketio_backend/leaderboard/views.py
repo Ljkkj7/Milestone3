@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from rest_framework.generics import APIView
+from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from custom_auth.models import UserProfile
 from custom_auth.serializers import UserProfileSerializer
