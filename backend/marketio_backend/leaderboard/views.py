@@ -10,16 +10,16 @@ from rest_framework.response import Response
 class LeaderboardView(APIView):
     """
     A view to display the leaderboard of users 
-    based on their experience points.
+    based on their level.
     """
     serializer_class = UserProfileSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         """
-        Return the top 10 users ordered by experience points.
+        Return the top 10 users ordered by level.
         """
-        return UserProfile.objects.order_by('-experience')[:10]
+        return UserProfile.objects.order_by('-level')[:10]
 
     def get(self, request):
         """
