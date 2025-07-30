@@ -61,9 +61,9 @@ class Stock(models.Model):
         stock_impact = random.uniform(20.0, event_impact)  # Start from 20 instead of 0.5
         
         # Amplified noise for more volatility
-        noise = random.uniform(-float(self.noise) * 10, float(self.noise) * 10)
+        noise = random.uniform(0, float(self.noise) * 10)
         
-        # sine wave much more aggressive
+        # Keep your sine wave but make it much more aggressive
         # Faster frequency (0.5 instead of 0.05) and bigger amplitude
         time_factor = 0.5 * timezone.now().timestamp()
         wave = stock_impact * math.sin(time_factor + 2 * math.pi * 0.5)
@@ -73,6 +73,7 @@ class Stock(models.Model):
         new_price = Decimal(self.price) + Decimal(price_change)
         
         self.price = max(Decimal('0.01'), Decimal(round(new_price, 2)))
+        
             
         # Save the updated stock price
         self.save()
