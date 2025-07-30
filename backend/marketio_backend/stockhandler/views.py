@@ -80,7 +80,7 @@ class BuyStockView(APIView):
 
         if user_profile.experience > ((user_profile.level**2) * 1000):
             user_profile.level += 1
-            user_profile.experience = 0
+            user_profile.experience -= (((user_profile.level-1)**2) * 1000)
 
         user_profile.balance -= totalCost
         user_profile.save()
@@ -147,7 +147,7 @@ class SellStockView(APIView):
 
         if user_profile.experience > ((user_profile.level**2) * 1000):
             user_profile.level += 1
-            user_profile.experience = 0
+            user_profile.experience -= (((user_profile.level-1)**2) * 1000)
 
         user_profile.balance += totalPrice
         user_profile.save()
