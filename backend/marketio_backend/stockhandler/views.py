@@ -75,12 +75,16 @@ class BuyStockView(APIView):
         if user_profile.balance < totalCost:
             return Response({'error': 'Insufficient balance'})
 
-        experience_gain = int(totalCost * Decimal('0.1'))  # Example: 10% of total cost as experience
+        experience_gain = int(totalCost * (float(2/user_profile.level)))  # Experience gain from buying is halved every level
         user_profile.experience += experience_gain
 
         if user_profile.experience > ((user_profile.level**2) * 1000):
-            user_profile.level += 1
-            user_profile.experience -= (((user_profile.level-1)**2) * 1000)
+            while user_profile.experience > 0:
+                if user_profile.experience - ((user_profile.level**2) * 1000) < 0:
+                    break
+                else:
+                    user_profile.level += 1
+                    user_profile.experience -= (((user_profile.level-1)**2) * 1000)
 
         user_profile.balance -= totalCost
         user_profile.save()
@@ -146,8 +150,12 @@ class SellStockView(APIView):
         user_profile.experience += experience_gain
 
         if user_profile.experience > ((user_profile.level**2) * 1000):
-            user_profile.level += 1
-            user_profile.experience -= (((user_profile.level-1)**2) * 1000)
+            while user_profile.experience > 0:
+                if user_profile.experience - ((user_profile.level**2) * 1000) < 0:
+                    break
+                else:
+                    user_profile.level += 1
+                    user_profile.experience -= (((user_profile.level-1)**2) * 1000)
 
         user_profile.balance += totalPrice
         user_profile.save()
