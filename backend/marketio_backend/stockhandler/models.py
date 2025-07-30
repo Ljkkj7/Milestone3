@@ -51,11 +51,11 @@ class Stock(models.Model):
             self.status = "positive"
 
         severity = random.randint(1, 10)  # Random severity level
-        event_impact = severity * self.amplitude # Impact based on severity and amplitude
+        event_impact = severity * float(self.amplitude) # Impact based on severity and amplitude
 
         # Simulate a sine wave effect with random noise
         stock_impact = random.uniform(0.5, event_impact)
-        noise = random.uniform(-self.noise, self.noise)
+        noise = random.uniform(-float(self.noise), float(self.noise))
         wave = stock_impact * math.sin(0.05 * timezone.now().timestamp() + 2 * math.pi * 0.5)
 
         # Calculate new price
@@ -73,11 +73,11 @@ class Stock(models.Model):
             self.status = "negative" 
 
         severity = random.randint(1, 10)  # Random severity level
-        event_impact = severity * self.amplitude  # Impact based on severity and amplitude
+        event_impact = severity * float(self.amplitude)  # Impact based on severity and amplitude
 
         # Simulate a sine wave effect with random noise
         stock_impact = -abs(random.uniform(0.5, event_impact))
-        noise = random.uniform(-self.noise, self.noise)
+        noise = random.uniform(-float(self.noise), float(self.noise))
         wave = stock_impact * math.sin(0.05 * timezone.now().timestamp() + 2 * math.pi * 0.5)
 
         # Calculate new price
