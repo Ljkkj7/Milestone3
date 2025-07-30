@@ -23,9 +23,14 @@ class Stock(models.Model):
         """"Simulate a price change based on a sine wave function and random noise."""
 
         #Check if a market event is happening to this stock
-        if self.status != "normal":
+        if self.status == "positive":
+            self.simulate_positive_market_event()
             return
-        
+
+        if self.status == "negative":
+            self.simulate_negative_market_event()
+            return
+
         now = timezone.now()
         delta = (now - self.created_at).total_seconds() / 3600 # Convert to hours
         amplitude = 10
