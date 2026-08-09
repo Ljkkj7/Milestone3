@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'corsheaders',  # For handling CORS
     'django.contrib.sites',  # For Django sites framework
     'rest_framework.authtoken',  # For token authentication
+    'rest_framework_simplejwt.token_blacklist',
 ]
 
 MIDDLEWARE = [
