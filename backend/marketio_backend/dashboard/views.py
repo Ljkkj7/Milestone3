@@ -31,7 +31,7 @@ class BalanceLoadView(APIView):
         else:
             # Get current user's balance
             try:
-                balance = UserProfile.objects.get(user=request.user)
+                balance, _ = UserProfile.objects.get_or_create(user=request.user)
                 serializer = UserProfileSerializer(balance)
                 return Response(serializer.data)
             except UserProfile.DoesNotExist:
@@ -52,7 +52,7 @@ class PortfolioLoadView(APIView):
             if target_user_id:
                 user_profile = UserProfile.objects.get(user__id=target_user_id)
             else:
-                user_profile = UserProfile.objects.get(user=request.user)
+                user_profile, _ = UserProfile.objects.get_or_create(user=request.user)
         except UserProfile.DoesNotExist:
             error_msg = "Target user not found." if target_user_id else "User profile not found."
             return Response({"error": error_msg}, status=404)
