@@ -27,7 +27,7 @@ class BuyStockView(APIView):
 
     def post(self, request):
         user = request.user
-        user_profile = UserProfile.objects.get(user=user)
+        user_profile, _ = UserProfile.objects.get_or_create(user=user)
         symbol = request.data.get("symbol")
         quantity = int(request.data.get("quantity"))
 
@@ -79,7 +79,7 @@ class SellStockView(APIView):
 
     def post(self, request):
         user = request.user
-        user_profile = UserProfile.objects.get(user=user)
+        user_profile, _ = UserProfile.objects.get_or_create(user=user)
         symbol = request.data.get("symbol")
         quantity = int(request.data.get("quantity"))
 
