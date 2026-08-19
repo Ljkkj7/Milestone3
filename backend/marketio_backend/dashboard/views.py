@@ -31,7 +31,7 @@ class BalanceLoadView(APIView):
         else:
             # Get current user's balance
             try:
-                balance, _ = UserProfile.objects.get_or_create(user=request.user)
+                balance, _= UserProfile.objects.get_or_create(user=request.user)
                 serializer = UserProfileSerializer(balance)
                 return Response(serializer.data)
             except UserProfile.DoesNotExist:
